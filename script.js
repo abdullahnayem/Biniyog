@@ -415,7 +415,12 @@ class ContributionManager {
             const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
             
             doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
-            doc.save(`Receipt_${contribution.receiptId}.pdf`);
+            
+            const dateObj = new Date(contribution.date);
+            const monthName = dateObj.toLocaleString('en-US', { month: 'long' });
+            const safeMemberName = contribution.member.replace(/[:\/\\*?"<>|]/g, '-');
+            
+            doc.save(`${safeMemberName}_${monthName}_${contribution.date}.pdf`);
             
         } catch (error) {
        
