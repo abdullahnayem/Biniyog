@@ -36,6 +36,24 @@ header p {
     margin-bottom: 20px;
 }
 
+#loginControl {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+#loginBtn, #logoutBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#logoutBtn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+    color: white;
+}
+
 .header-buttons {
     display: flex;
     gap: 15px;
@@ -336,6 +354,14 @@ header p {
     .header-buttons {
         flex-direction: column;
         align-items: center;
+    }
+
+    #loginControl {
+        position: static;
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
     }
     
     .headers-display {
