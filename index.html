@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সমন্বয় সমিতি - আর্থিক ব্যবস্থাপনা</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>সমন্বয় সমিতি</h1>
+            <p>সদস্য চাঁদা ব্যবস্থাপনা সিস্টেম</p>
+            <div id="loginControl" style="position: absolute; top: 20px; right: 20px;">
+                <button id="loginBtn" class="btn-primary" style="padding: 8px 15px; font-size: 14px;">লগইন</button>
+                <button id="logoutBtn" class="btn-secondary" style="display: none; padding: 8px 15px; font-size: 14px; background: #ff6b6b; color: white;">লগআউট</button>
+            </div>
+        </header>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content" style="max-width: 400px;">
+                <span class="close" id="closeLogin">&times;</span>
+                <h2 style="text-align: center;">লগইন করুন</h2>
+                <div class="form-group">
+                    <label>ব্যবহারকারী নাম:</label>
+                    <input type="text" id="usernameInput" placeholder="username">
+                </div>
+                <div class="form-group">
+                    <label>পাসওয়ার্ড:</label>
+                    <input type="password" id="passwordInput" placeholder="password">
+                </div>
+                <button id="submitLogin" class="btn-success" style="width: 100%;">প্রবেশ করুন</button>
+                <p id="loginError" style="color: red; display: none; margin-top: 10px; text-align: center;">ভুল তথ্য!</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Contribution Form -->
+            <div class="form-section" id="formSection" style="display: none;">
+                <h2>অবদান যোগ করুন</h2>
+                <form id="contributionForm">
+                    <div class="form-group">
+                        <label for="memberSelect">সদস্য নির্বাচন করুন:</label>
+                        <select id="memberSelect" required>
+                            <option value="">সদস্য নির্বাচন করুন</option>
+                            <option value="ভাই মো: সোহেল">ভাই মো: সোহেল</option>
+                            <option value="ভাই মো: মাহফুজ">ভাই মো: মাহফুজ</option>
+                            <option value="ভাই মো: শফিউল">ভাই মো: শফিউল</option>
+                            <option value="ভাই মো: জুবায়ের">ভাই মো: জুবায়ের</option>
+                            <option value="ভাই মো: মুকুল">ভাই মো: মুকুল</option>
+                            <option value="ভাই মো: ইমরান">ভাই মো: ইমরান</option>
+                            <option value="ভাই মো: তাওহিদ">ভাই মো: তাওহিদ</option>
+                            <option value="ভাই মো: আবু বকর">ভাই মো: আবু বকর</option>
+                            <option value="ভাই মো: নাঈম">ভাই মো: নাঈম</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">টাকার পরিমাণ:</label>
+                        <input type="number" id="amount" placeholder="টাকার পরিমাণ লিখুন" required min="1" value="5000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">তারিখ:</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">মন্তব্য (ঐচ্ছিক):</label>
+                        <textarea id="notes" placeholder="যেকোনো বিশেষ মন্তব্য"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-success">জমা দিন ও রসিদ প্রিন্ট</button>
+                </form>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="dashboard-section">
+                <h2>ড্যাশবোর্ড</h2>
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <h3>মোট সংগ্রহ</h3>
+                        <p id="totalAmount">০ টাকা</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>মোট সদস্য</h3>
+                        <p id="totalMembers">৯ জন</p>
+                    </div>
+                    <div class="stat-card" id="currentMonthCard" style="cursor: pointer;">
+                        <h3>এই মাসের সংগ্রহ</h3>
+                        <p id="currentMonthCollection">০ টাকা</p>
+                    </div>
+                </div>
+
+                <div class="members-list">
+                    <h3>সদস্যদের অবদান</h3>
+                    <div id="membersContainer" class="members-grid">
+                        <!-- Members will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Details Modal -->
+        <div id="memberModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modalTitle">সদস্য বিবরণ</h2>
+                <div id="memberDetails">
+                    <!-- Member details will be shown here -->
+                </div>
+                <div class="modal-actions">
+                    <button onclick="app.printMemberStatement()" class="btn-primary">স্টেটমেন্ট প্রিন্ট</button>
+                    <button onclick="app.closeModal()" class="btn-secondary">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="google-sheets.js"></script>
+</body>
+</html>
