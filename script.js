@@ -129,8 +129,7 @@ class ContributionManager {
             timestamp: new Date().toISOString(),
             receiptId: this.generateReceiptId()
         };
-   this.generatePDFReceipt(contribution);
-        //this.addContribution(contribution);
+        this.addContribution(contribution);
         
         // Reset form
         memberSelect.value = '';
