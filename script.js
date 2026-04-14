@@ -129,8 +129,8 @@ class ContributionManager {
             timestamp: new Date().toISOString(),
             receiptId: this.generateReceiptId()
         };
-
-        this.addContribution(contribution);
+   this.generatePDFReceipt(contribution);
+        //this.addContribution(contribution);
         
         // Reset form
         memberSelect.value = '';
@@ -432,52 +432,55 @@ class ContributionManager {
 
     amountToWords(amount) {
         const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
-        const teens = ['দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোল', 'সতেরো', 'আঠারো', 'উনিশ'];
-        const tens = ['', 'দশ', 'বিশ', 'তিরিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
-        
-        if (amount === 0) return 'শূন্য';
-        
-        let words = '';
-        
-        // Crore
-        if (amount >= 10000000) {
-            words += this.amountToWords(Math.floor(amount / 10000000)) + ' কোটি ';
-            amount %= 10000000;
-        }
-        
-        // Lakh
-        if (amount >= 100000) {
-            words += this.amountToWords(Math.floor(amount / 100000)) + ' লক্ষ ';
-            amount %= 100000;
-        }
-        
-        // Thousand
-        if (amount >= 1000) {
-            words += this.amountToWords(Math.floor(amount / 1000)) + ' হাজার ';
-            amount %= 1000;
-        }
-        
-        // Hundred
-        if (amount >= 100) {
-            words += units[Math.floor(amount / 100)] + ' শত ';
-            amount %= 100;
-        }
-        
-        // Tens and Units
-        if (amount > 0) {
-            if (amount < 10) {
-                words += units[amount];
-            } else if (amount < 20) {
-                words += teens[amount - 10];
-            } else {
-                words += tens[Math.floor(amount / 10)];
-                if (amount % 10 > 0) {
-                    words += ' ' + units[amount % 10];
-                }
+        const numbersUnderHundred = [
+            'শূন্য', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়',
+            'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ',
+            'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আঠাশ', 'উনত্রিশ',
+            'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'উনচল্লিশ',
+            'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ',
+            'পঞ্চাশ', 'একান্ন', 'বাহান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট',
+            'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর',
+            'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি',
+            'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশি', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই',
+            'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'
+        ];
+
+        const convertNumber = (value) => {
+            if (value === 0) return '';
+            if (value < 100) return numbersUnderHundred[value];
+
+            let words = '';
+
+            if (value >= 10000000) {
+                words += convertNumber(Math.floor(value / 10000000)) + ' কোটি ';
+                value %= 10000000;
             }
-        }
-        
-        return words.trim() + ' টাকা';
+
+            if (value >= 100000) {
+                words += convertNumber(Math.floor(value / 100000)) + ' লক্ষ ';
+                value %= 100000;
+            }
+
+            if (value >= 1000) {
+                words += convertNumber(Math.floor(value / 1000)) + ' হাজার ';
+                value %= 1000;
+            }
+
+            if (value >= 100) {
+                words += units[Math.floor(value / 100)] + ' শত ';
+                value %= 100;
+            }
+
+            if (value > 0) {
+                words += numbersUnderHundred[value];
+            }
+
+            return words.trim();
+        };
+
+        if (amount === 0) return 'শূন্য টাকা';
+
+        return convertNumber(amount) + ' টাকা';
     }
 
     printMemberStatement() {
